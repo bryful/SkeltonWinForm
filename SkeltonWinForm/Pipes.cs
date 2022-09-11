@@ -39,7 +39,7 @@ namespace BRY
 							FormCollection apcl = Application.OpenForms;
 
 							if (apcl.Count > 0)
-								((Form1)apcl[0]).Command(read.Split(";")); //取得した引数を送る
+								((Form1)apcl[0]).Command(read.Split(";"),false); //取得した引数を送る
 
 							if (!_execution)
 								break; //起動停止？

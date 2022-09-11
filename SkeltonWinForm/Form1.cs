@@ -40,12 +40,11 @@ namespace SkeltonWinForm
 			Application.Exit();
 		}
 		// ********************************************************************
-		public void Command(string[] args)
+		public void Command(string[] args,bool IsFirst = true)
 		{
 			string r = "";
 			if (args == null || args.Length == 0)
 			{
-				r = "引数なし";
 			}
 			else
 			{
@@ -54,7 +53,6 @@ namespace SkeltonWinForm
 			}
 			textBox1.Text = r;
 			textBox1.Select(0,0);
-
 		}
 	}
 }
