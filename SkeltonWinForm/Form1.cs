@@ -25,7 +25,8 @@ namespace SkeltonWinForm
 					}
 				}
 			}
-			//Command(Environment.GetCommandLineArgs().Skip(1).ToArray());
+			//
+			Command(Environment.GetCommandLineArgs().Skip(1).ToArray(),true);
 		}
 		// ********************************************************************
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)

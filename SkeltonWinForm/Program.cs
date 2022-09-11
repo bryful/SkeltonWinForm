@@ -47,9 +47,7 @@ namespace SkeltonWinForm
 				Pipes._execution = true;
 				Pipes.ArgumentPipeServer(ApplicationId);
 				ApplicationConfiguration.Initialize();
-				Form1 f = new Form1();
-				f.Command(args);
-				Application.Run(f);
+				Application.Run(new Form1());
 				Pipes._execution = false;
 			}
 			else
