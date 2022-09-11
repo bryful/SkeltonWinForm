@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SkeltonWinForm": {
+      "commandName": "Project",
+      "commandLineArgs": "aaaa\r\n"
+    }
+  }
+}
