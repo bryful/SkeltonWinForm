@@ -1,19 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json.Nodes;
-using System.IO;
+﻿using BRY;
 using System.IO.Pipes;
-using SkeltonWinForm;
 
-namespace BRY
+namespace SkeltonWinForm
 {
-	public class Pipes
+	public partial class MainForm : Form
 	{
 		public static bool _execution = true;
-		// *******************************************************************************
+
+		public MainForm()
+		{
+			InitializeComponent();
+		}
+
+		// ********************************************************************
+		private void Form1_Load(object sender, EventArgs e)
+		{
+			PrefFile pf = new PrefFile();
+			this.Text = pf.AppName;
+			if (pf.Load()==true)
+			{
+				bool ok = false;
+				Rectangle r = pf.GetRect("Bound", out ok);
+				if (ok)
+				{
+					if (PrefFile.ScreenIn(r) == true)
+					{
+						this.Bounds = r;
+					}
+				}
+			}
+			//
+			Command(Environment.GetCommandLineArgs().Skip(1).ToArray(),true);
+		}
+		// ********************************************************************
+		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			PrefFile pf = new PrefFile();
+			pf.SetRect("Bound", this.Bounds);
+			pf.Save();
+		}
+		// ********************************************************************
+		private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Application.Exit();
+		}
+		// ********************************************************************
+		public void Command(string[] args,bool IsFirst = true)
+		{
+			string r = "";
+			if (args == null || args.Length == 0)
+			{
+			}
+			else
+			{
+				foreach (string ehArg in args)
+					r += ehArg + "\r\n"; //引数を表示
+			}
+			textBox1.Text = r;
+			textBox1.Select(0,0);
+		}
 		// *******************************************************************************
 		static public void ArgumentPipeServer(string pipeName)
 		{
@@ -39,7 +84,7 @@ namespace BRY
 							FormCollection apcl = Application.OpenForms;
 
 							if (apcl.Count > 0)
-								((Form1)apcl[0]).Command(read.Split(";"),false); //取得した引数を送る
+								((MainForm)apcl[0]).Command(read.Split(";"), false); //取得した引数を送る
 
 							if (!_execution)
 								break; //起動停止？
@@ -72,7 +117,7 @@ namespace BRY
 			});
 		}
 	}
-	// ******************************************************************************
+	// ********************************************************************
 	public class StreamString
 	{
 		private System.IO.Stream ioStream;
@@ -83,6 +128,7 @@ namespace BRY
 			streamEncoding = new System.Text.UnicodeEncoding();
 		}
 
+		// ********************************************************************
 		public string ReadString()
 		{
 			int len = 0;
@@ -97,6 +143,7 @@ namespace BRY
 			else //テキストなし
 				return "";
 		}
+		// ********************************************************************
 		public int WriteString(string outString)
 		{
 			if (string.IsNullOrEmpty(outString))
@@ -112,4 +159,5 @@ namespace BRY
 			return outBuffer.Length + 2; //テキスト＋２(テキスト長)
 		}
 	}
+	// ********************************************************************
 }
