@@ -163,6 +163,13 @@ namespace SkeltonWinForm
 								}
 							}
 							break;
+						case "exit":
+						case "quit":
+							if((args1.ParamsCount==1)&& (IsPipe == PIPECALL.DoubleExec))
+							{
+								Application.Exit();
+							}
+							break;
 					}
 				}
 			}
