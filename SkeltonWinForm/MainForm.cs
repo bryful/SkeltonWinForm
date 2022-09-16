@@ -3,6 +3,13 @@ using System.IO.Pipes;
 
 namespace SkeltonWinForm
 {
+	public enum PIPECALL
+	{
+		StartupExec,
+		DoubleExec,
+		ExtExec
+	}
+
 	public partial class MainForm : Form
 	{
 		public static bool _execution = true;
@@ -30,7 +37,7 @@ namespace SkeltonWinForm
 				}
 			}
 			//
-			Command(Environment.GetCommandLineArgs().Skip(1).ToArray(),true);
+			Command(Environment.GetCommandLineArgs().Skip(1).ToArray());
 		}
 		// ********************************************************************
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -45,7 +52,7 @@ namespace SkeltonWinForm
 			Application.Exit();
 		}
 		// ********************************************************************
-		public void Command(string[] args,bool IsFirst = true)
+		public void Command(string[] args)
 		{
 			string r = "";
 			if (args == null || args.Length == 0)
@@ -84,7 +91,7 @@ namespace SkeltonWinForm
 							FormCollection apcl = Application.OpenForms;
 
 							if (apcl.Count > 0)
-								((MainForm)apcl[0]).Command(read.Split(";"), false); //取得した引数を送る
+								((MainForm)apcl[0]).Command(read.Split(";")); //取得した引数を送る
 
 							if (!_execution)
 								break; //起動停止？
