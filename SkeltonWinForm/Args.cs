@@ -7,6 +7,7 @@ namespace BRY
 		private int m_Index = 0;
 		public int Index { get { return m_Index; } }
 		private string m_Arg = "";
+		public string Arg { get { return m_Arg; } }
 		private bool m_IsOption= false;
 		public bool IsOption{get{ return m_IsOption; }}
 		private bool m_IsPath = false;
@@ -93,6 +94,7 @@ namespace BRY
 		public Param[] Params = new Param[0];
 		private int [] m_IndexTbl = new int[0];
 		public int OptionCount { get { return m_IndexTbl.Length; } }
+		public int ParamsCount { get { return Params.Length; } }
 		public Param Option(int idx)
 		{
 			Param ret = new Param("",-1);
@@ -101,6 +103,20 @@ namespace BRY
 				ret = Params[m_IndexTbl[idx]];
 			}
 			return ret;
+		}
+		public string[] ParamStrings
+		{
+			get
+			{
+				string[] ret = new string[Params.Length];
+				if (Params.Length > 0) {
+					for (int i=0; i< Params.Length;i++)
+					{
+						ret[i] = Params[i].Arg;
+					}
+				}
+				return ret;
+			}
 		}
 		// ********************************************************************
 		// ********************************************************************

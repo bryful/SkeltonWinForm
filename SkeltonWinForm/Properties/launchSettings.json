@@ -2,7 +2,7 @@
   "profiles": {
     "SkeltonWinForm": {
       "commandName": "Project",
-      "commandLineArgs": "aaaa\r\n"
+      "commandLineArgs": "-load aaaa.txt -save bbbb.txt\r\n"
     }
   }
 }

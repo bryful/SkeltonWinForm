@@ -2,10 +2,19 @@
 
 namespace SkeltonWinForm
 {
+	public enum StartupCmd
+	{
+		None=0,
+		IsRunning,
+		StartProcess
+	}
+
 	internal static class Program
 	{
 		private const string ApplicationId = "SkeltonWinForm"; // GUIDなどユニークなもの
 		private static System.Threading.Mutex _mutex = new System.Threading.Mutex(false, ApplicationId);
+
+		// *******************************************************************************************
 		[STAThread]
 		static void Main(string[] args)
 		{
@@ -28,7 +37,6 @@ namespace SkeltonWinForm
 			  //				MessageBoxButtons.OK, MessageBoxIcon.Hand);
 
 				MainForm.ArgumentPipeClient(ApplicationId, args).Wait();
-				return; // プログラム終了
 			}
 		}
 	}
