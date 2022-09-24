@@ -133,7 +133,7 @@ namespace BRY
 		/// Argsの個数
 		/// </summary>
 		public int ParamsCount { get { return Params.Length; } }
-		public Param GetParam(int idx)
+		public Param Option(int idx)
 		{
 			Param ret = new Param("",-1);
 			if ((idx >= 0) && (idx < m_IndexTbl.Length))

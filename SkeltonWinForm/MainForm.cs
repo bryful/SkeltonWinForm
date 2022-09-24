@@ -128,7 +128,7 @@ namespace SkeltonWinForm
 				for (int i = 0; i < args1.OptionCount; i++)
 				{
 					if (err == false) break;
-					Param p = args1.GetParam(i);
+					Param p = args1.Option(i);
 					switch (p.OptionStr.ToLower())
 					{
 						case "tocenter":
