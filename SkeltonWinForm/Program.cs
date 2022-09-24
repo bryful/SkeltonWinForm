@@ -36,7 +36,8 @@ namespace SkeltonWinForm
 			  //				ApplicationId,
 			  //				MessageBoxButtons.OK, MessageBoxIcon.Hand);
 
-				MainForm.ArgumentPipeClient(ApplicationId, args).Wait();
+				PipeData pd = new PipeData(args, PIPECALL.DoubleExec);
+				CallExe.PipeClient(ApplicationId, pd.ToJson()).Wait();
 			}
 		}
 	}

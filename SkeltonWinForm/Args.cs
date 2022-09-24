@@ -2,16 +2,34 @@
 
 namespace BRY
 {
+	/// <summary>
+	/// Argsクラスが扱うデータ
+	/// </summary>
 	public class Param
 	{
 		private int m_Index = 0;
+		/// <summary>
+		/// パラメータのインデックス番号
+		/// </summary>
 		public int Index { get { return m_Index; } }
 		private string m_Arg = "";
+		/// <summary>
+		/// パラメータ文字
+		/// </summary>
 		public string Arg { get { return m_Arg; } }
 		private bool m_IsOption= false;
+		/// <summary>
+		/// オプションかどうか?[-|/]で始まるか
+		/// </summary>
 		public bool IsOption{get{ return m_IsOption; }}
 		private bool m_IsPath = false;
+		/// <summary>
+		/// パス文字列かどうか？余り当てにならない
+		/// </summary>
 		public bool IsPath { get { return m_IsPath; } }
+		/// <summary>
+		/// オプションだったら、それを除いた文字列
+		/// </summary>
 		public string OptionStr
 		{
 			get
@@ -25,6 +43,11 @@ namespace BRY
 			}
 		}
 		// *******************************************************
+		/// <summary>
+		/// コンストラクタ
+		/// </summary>
+		/// <param name="s">Arg</param>
+		/// <param name="idx">index</param>
 		public Param(string s,int idx)
 		{
 			m_Arg = s;
@@ -88,14 +111,29 @@ namespace BRY
 
 	}
 
+	/// <summary>
+	/// コマンド文字配列を解析するクラス
+	/// </summary>
 	public class Args
 	{
 		// ********************************************************************
+		/// <summary>
+		/// Argをクラスにした物
+		/// </summary>
 		public Param[] Params = new Param[0];
+		/// <summary>
+		/// オプションのインデックステーブル
+		/// </summary>
 		private int [] m_IndexTbl = new int[0];
+		/// <summary>
+		/// オプションの数
+		/// </summary>
 		public int OptionCount { get { return m_IndexTbl.Length; } }
+		/// <summary>
+		/// Argsの個数
+		/// </summary>
 		public int ParamsCount { get { return Params.Length; } }
-		public Param Option(int idx)
+		public Param GetParam(int idx)
 		{
 			Param ret = new Param("",-1);
 			if ((idx >= 0) && (idx < m_IndexTbl.Length))
@@ -104,6 +142,9 @@ namespace BRY
 			}
 			return ret;
 		}
+		/// <summary>
+		/// Argsそのもの
+		/// </summary>
 		public string[] ParamStrings
 		{
 			get

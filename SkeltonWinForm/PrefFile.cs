@@ -188,8 +188,18 @@ namespace BRY
 			{
 				try
 				{
-					ret = m_data[key].GetValue<string[]>();
-					ok = true;
+					var ja = m_data?[key].AsArray();
+					if(ja.Count>0)
+					{
+						ret = new string[ja.Count];
+						int i = 0;
+						foreach(var s in ja)
+						{
+							ret[i] = s.GetValue<string>();
+							i++;
+						}
+						ok = true;
+					}
 				}
 				catch
 				{
@@ -219,8 +229,19 @@ namespace BRY
 			{
 				try
 				{
-					ret = m_data[key].GetValue<int[]>();
-					ok = true;
+					var ja = m_data?[key].AsArray();
+					if (ja.Count > 0)
+					{
+						ret = new int[ja.Count];
+						int i = 0;
+						foreach (var s in ja)
+						{
+							ret[i] = s.GetValue<int>();
+							i++;
+
+						}
+						ok = true;
+					}
 				}
 				catch
 				{
@@ -270,23 +291,33 @@ namespace BRY
 		// ****************************************************
 		public bool[] GetValueBoolArray(string key, out bool ok)
 		{
-			Boolean[] ret = new Boolean[0];
+			bool[] ret = new bool[0];
 			ok = false;
 			if ((key is not null) && (m_data is not null))
 			{
 				try
 				{
-					ret = m_data[key].GetValue<Boolean[]>();
-					ok = true;
+					var ja = m_data?[key].AsArray();
+					if (ja.Count > 0)
+					{
+						ret = new bool[ja.Count];
+						int i = 0;
+						foreach (var s in ja)
+						{
+							ret[i] = s.GetValue<bool>();
+							i++;
+
+						}
+						ok = true;
+					}
 				}
 				catch
 				{
-					ret = new Boolean[0];
+					ret = new bool[0];
 					ok = false;
 				}
 			}
 			return ret;
-
 		}
 		// ****************************************************
 		public string ToJson()

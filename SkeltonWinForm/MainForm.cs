@@ -1,16 +1,14 @@
 ﻿using BRY;
 using System.Diagnostics;
 using System.IO.Pipes;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace SkeltonWinForm
 {
-	public enum PIPECALL
-	{
-		StartupExec,
-		DoubleExec
-	}
+
 
 	public partial class MainForm : Form
 	{
@@ -31,11 +29,11 @@ namespace SkeltonWinForm
 		{
 			PrefFile pf = new PrefFile();
 			this.Text = pf.AppName;
-			if (pf.Load()==true)
+			if (pf.Load() == true)
 			{
 				bool ok = false;
 				Rectangle r = pf.GetRect("Bound", out ok);
-				if ((ok)&& (PrefFile.ScreenIn(r) == true))
+				if ((ok) && (PrefFile.ScreenIn(r) == true))
 				{
 					this.Bounds = r;
 				}
@@ -45,8 +43,7 @@ namespace SkeltonWinForm
 				}
 			}
 			//
-			Command(Environment.GetCommandLineArgs().Skip(1).ToArray(),PIPECALL.StartupExec);
-			//this.Text = nameof(MainForm.Parent) + "/aa";
+			Command(Environment.GetCommandLineArgs().Skip(1).ToArray(), PIPECALL.StartupExec);
 		}
 		// ********************************************************************
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -101,7 +98,7 @@ namespace SkeltonWinForm
 					{
 						string str = File.ReadAllText(p, Encoding.GetEncoding("utf-8"));
 						textBox1.Text = str;
-						textBox1.Select(0,0);
+						textBox1.Select(0, 0);
 						m_FileName = p;
 						this.Text = Path.GetFileName(p);
 						ret = true;
@@ -123,14 +120,15 @@ namespace SkeltonWinForm
 		// ********************************************************************
 		public void Command(string[] args, PIPECALL IsPipe = PIPECALL.StartupExec)
 		{
-			bool err = true;
+			bool QuitFlag = false;			bool err = true;
+
 			Args args1 = new Args(args);
-			if(args1.OptionCount>0)
+			if (args1.OptionCount > 0)
 			{
-				for (int i=0; i< args1.OptionCount;i++)
+				for (int i = 0; i < args1.OptionCount; i++)
 				{
 					if (err == false) break;
-					Param p = args1.Option(i);
+					Param p = args1.GetParam(i);
 					switch (p.OptionStr.ToLower())
 					{
 						case "tocenter":
@@ -144,9 +142,9 @@ namespace SkeltonWinForm
 						case "load":
 						case "ld":
 							int idx = p.Index + 1;
-							if (idx<args1.ParamsCount)
+							if (idx < args1.ParamsCount)
 							{
-								if (args1.Params[idx].IsOption ==false)
+								if (args1.Params[idx].IsOption == false)
 								{
 									err = Import(args1.Params[idx].Arg);
 								}
@@ -165,9 +163,9 @@ namespace SkeltonWinForm
 							break;
 						case "exit":
 						case "quit":
-							if((args1.ParamsCount==1)&& (IsPipe == PIPECALL.DoubleExec))
+							if ((args1.ParamsCount == 1) && ((IsPipe == PIPECALL.DoubleExec)|| (IsPipe == PIPECALL.PipeExec)))
 							{
-								Application.Exit();
+								QuitFlag = true;
 							}
 							break;
 					}
@@ -175,7 +173,7 @@ namespace SkeltonWinForm
 			}
 			else
 			{
-				if(args1.ParamsCount>0)
+				if (args1.ParamsCount > 0)
 				{
 					if (args1.ParamsCount == 1)
 					{
@@ -183,12 +181,25 @@ namespace SkeltonWinForm
 					}
 					else
 					{
-						textBox1.Lines = args1.ParamStrings;
-						textBox1.Select(0, 0);
+						this.Invoke((Action)(() => {
+							textBox1.Lines = args1.ParamStrings;
+							textBox1.Select(0, 0);
+						}));
 					}
 				}
 			}
+			if( IsPipe == PIPECALL.PipeExec)
+			{
+				PipeData pd = new PipeData(args, IsPipe);
+				CallExe.PipeClient("SkeltonWinFormCall",pd.ToJson()).Wait();
+			}
+			if(QuitFlag) Application.Exit();
+			if (IsPipe == PIPECALL.PipeExec)
+			{
+				//this.Text += "Pi";
+			}
 		}
+		// *******************************************************************************
 		// *******************************************************************************
 		static public void ArgumentPipeServer(string pipeName)
 		{
@@ -214,7 +225,10 @@ namespace SkeltonWinForm
 							FormCollection apcl = Application.OpenForms;
 
 							if (apcl.Count > 0)
-								((MainForm)apcl[0]).Command(read.Split(";"),PIPECALL.DoubleExec); //取得した引数を送る
+							{
+								PipeData pd = new PipeData(read);
+								((MainForm)apcl[0]).Command(pd.GetArgs(), pd.GetPIPECALL()); //取得した引数を送る
+							}
 
 							if (!_execution)
 								break; //起動停止？
@@ -227,7 +241,8 @@ namespace SkeltonWinForm
 			});
 		}
 		// ******************************************************************************
-		public static Task ArgumentPipeClient(string pipeName, string[] args)
+		/*
+		public static Task ArgumentPipeClient(string pipeName, string js)
 		{
 			return Task.Run(() =>
 			{ //Taskを使ってサーバに送信waitで処理が終わるまで待つ
@@ -238,7 +253,7 @@ namespace SkeltonWinForm
 					pipeClient.Connect();
 
 					ssCl = new StreamString(pipeClient);
-					writeData = string.Join(";", args); //送信する引数
+					writeData = js; //送信する引数
 					ssCl.WriteString(writeData);
 #pragma warning disable CS8600 // Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
 					ssCl = null;
@@ -246,48 +261,38 @@ namespace SkeltonWinForm
 				}
 			});
 		}
-	}
-	// ********************************************************************
-	public class StreamString
-	{
-		private System.IO.Stream ioStream;
-		private System.Text.UnicodeEncoding streamEncoding;
-		public StreamString(System.IO.Stream ioStream)
-		{
-			this.ioStream = ioStream;
-			streamEncoding = new System.Text.UnicodeEncoding();
-		}
+		*/
 
-		// ********************************************************************
-		public string ReadString()
+		private void button1_Click(object sender, EventArgs e)
 		{
-			int len = 0;
-			len = ioStream.ReadByte() * 256; //テキスト長
-			len += ioStream.ReadByte(); //テキスト長余り
-			if (len > 0)
-			{ //テキストが格納されている
-				byte[] inBuffer = new byte[len];
-				ioStream.Read(inBuffer, 0, len); //テキスト取得
-				return streamEncoding.GetString(inBuffer);
-			}
-			else //テキストなし
-				return "";
-		}
-		// ********************************************************************
-		public int WriteString(string outString)
-		{
-			if (string.IsNullOrEmpty(outString))
-				return 0;
-			byte[] outBuffer = streamEncoding.GetBytes(outString);
-			int len = outBuffer.Length; //テキストの長さ
-			if (len > UInt16.MaxValue)
-				len = (int)UInt16.MaxValue; //65535文字
-			ioStream.WriteByte((byte)(len / 256)); //テキスト長
-			ioStream.WriteByte((byte)(len & 255)); //テキスト長余り
-			ioStream.Write(outBuffer, 0, len); //テキストを格納
-			ioStream.Flush();
-			return outBuffer.Length + 2; //テキスト＋２(テキスト長)
+			/*
+			PIPECALL a = PIPECALL.PipeExec;
+
+			PipeData pd = new PipeData(b, a);
+			string js = pd.ToJson();
+			PipeData pd2 = new PipeData(js);
+			string[] b2 = pd2.GetArgs();
+			*/
+			string[] a = new string[] { "aaa", "sssss", "sfsda" };
+			int[] b = new int[] { 12, -2, 6 };
+
+			PrefFile p = new PrefFile();
+			p.SetValue("a", a);
+			p.SetValue("b", b);
+
+			bool ok = true;
+			string[] a2 = p.GetValueStringArray("a", out ok);
+			int[] b2 = p.GetValueIntArray("b", out ok);
+
+			textBox1.Text = string.Format("{0};{1}",a2[0], b2[0]);
+
+
 		}
 	}
+	// ******************************************************************************
+
+	// *******************************************************************************
+
+
 	// ********************************************************************
 }
