@@ -1,10 +1,12 @@
 ﻿using BRY;
+using Microsoft.VisualBasic.Devices;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using static System.Windows.Forms.DataFormats;
 
 namespace SkeltonWinForm
 {
@@ -27,29 +29,20 @@ namespace SkeltonWinForm
 		// ********************************************************************
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			PrefFile pf = new PrefFile();
+			if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) return;
+			PrefFile pf = new PrefFile(this);
 			this.Text = pf.AppName;
 			if (pf.Load() == true)
 			{
-				bool ok = false;
-				Rectangle r = pf.GetRect("Bound", out ok);
-				if ((ok) && (PrefFile.ScreenIn(r) == true))
-				{
-					this.Bounds = r;
-				}
-				else
-				{
-					ToCenter();
-				}
+				pf.RestoreForm();
 			}
-			//
-			Command(Environment.GetCommandLineArgs().Skip(1).ToArray(), PIPECALL.StartupExec);
+				Command(Environment.GetCommandLineArgs().Skip(1).ToArray(), PIPECALL.StartupExec);
 		}
 		// ********************************************************************
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			PrefFile pf = new PrefFile();
-			pf.SetRect("Bound", this.Bounds);
+			PrefFile pf = new PrefFile(this);
+			pf.StoreForm();
 			pf.Save();
 		}
 		// ********************************************************************
@@ -272,7 +265,6 @@ namespace SkeltonWinForm
 			string js = pd.ToJson();
 			PipeData pd2 = new PipeData(js);
 			string[] b2 = pd2.GetArgs();
-			*/
 			string[] a = new string[] { "aaa", "sssss", "sfsda" };
 			int[] b = new int[] { 12, -2, 6 };
 
@@ -285,7 +277,14 @@ namespace SkeltonWinForm
 			int[] b2 = p.GetValueIntArray("b", out ok);
 
 			textBox1.Text = string.Format("{0};{1}",a2[0], b2[0]);
+			*/
 
+			textBox2.Text = AEJson.FromAEJson(textBox1.Text);
+		}
+
+		private void button2_Click(object sender, EventArgs e)
+		{
+			textBox3.Text = AEJson.ToAEJson(textBox2.Text);
 
 		}
 	}
