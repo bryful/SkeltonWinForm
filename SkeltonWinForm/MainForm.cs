@@ -36,7 +36,11 @@ namespace SkeltonWinForm
 			{
 				pf.RestoreForm();
 			}
-				Command(Environment.GetCommandLineArgs().Skip(1).ToArray(), PIPECALL.StartupExec);
+			else
+			{
+				ToCenter();
+			}
+			Command(Environment.GetCommandLineArgs().Skip(1).ToArray(), PIPECALL.StartupExec);
 		}
 		// ********************************************************************
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -126,11 +130,15 @@ namespace SkeltonWinForm
 					{
 						case "tocenter":
 						case "center":
-							ToCenter();
+							this.Invoke((Action)(() => {
+								ToCenter();
+							})); 
 							break;
 						case "foregroundWindow":
 						case "foreground":
-							ForegroundWindow();
+							this.Invoke((Action)(() => {
+								ForegroundWindow();
+							}));
 							break;
 						case "load":
 						case "ld":
@@ -170,7 +178,9 @@ namespace SkeltonWinForm
 				{
 					if (args1.ParamsCount == 1)
 					{
-						err = Import(args1.Params[0].Arg);
+						this.Invoke((Action)(() => {
+							err = Import(args1.Params[0].Arg);
+						}));
 					}
 					else
 					{
@@ -191,6 +201,9 @@ namespace SkeltonWinForm
 			{
 				//this.Text += "Pi";
 			}
+			this.Invoke((Action)(() => {
+				SetForegroundWindow(this.Handle);
+			}));
 		}
 		// *******************************************************************************
 		// *******************************************************************************

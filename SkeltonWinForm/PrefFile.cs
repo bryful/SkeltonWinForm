@@ -71,6 +71,26 @@ namespace BRY
 			}
 
 		}
+		public void StoreLoc()
+		{
+			if (m_Form == null) return;
+			SetPoint("Location", m_Form.Location);
+		}
+		public void RestoreLoc()
+		{
+			if (m_Form == null) return;
+			bool ok = false;
+			Point p = GetPoint("Location", out ok);
+			if (ok) m_Form.Location = p;
+			Rectangle r = m_Form.Bounds;
+			if ((ok == false) || (ScreenIn(r) == false))
+			{
+				Rectangle rct = Screen.PrimaryScreen.Bounds;
+				Point p2 = new Point((rct.Width - m_Form.Width) / 2, (rct.Height - m_Form.Height) / 2);
+				m_Form.Location = p2;
+			}
+
+		}
 		// ****************************************************
 		static public bool IsInRect(Rectangle a, Rectangle b)
 		{
