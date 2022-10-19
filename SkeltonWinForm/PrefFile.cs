@@ -14,6 +14,9 @@ namespace BRY
 		private string _m_AppName = "";
 		public string AppName { get { return _m_AppName; } }
 		private Form? m_Form = null;
+		private string m_dir = "";
+		public string Dir { get { return m_dir; } }
+
 		// *********************************
 		// *********************************
 		public PrefFile(Form? fm =null,string aName = "")
@@ -27,9 +30,8 @@ namespace BRY
 			{
 				_m_AppName = aName;
 			}
-			SetFilePath(Path.Combine(
-				GetFileSystemPath(Environment.SpecialFolder.ApplicationData),
-				_m_AppName + ".json"));
+			m_dir = GetFileSystemPath(Environment.SpecialFolder.ApplicationData);
+			SetFilePath(Path.Combine(m_dir,_m_AppName + ".json"));
 		}
 		// ****************************************************
 		private static string GetFileSystemPath(Environment.SpecialFolder folder)
@@ -57,12 +59,17 @@ namespace BRY
 			if (m_Form == null) return;
 			SetRect("FormBounds", m_Form.Bounds);
 		}
+		// ****************************************************
 		public void RestoreForm()
 		{
 			if (m_Form == null) return;
 			bool ok = false;
 			Rectangle r = GetRect("FormBounds", out ok);
-			if(ok) m_Form.Bounds = r;
+			if (ok)
+			{
+				m_Form.MaximumSize = new Size(65536, 65536);
+				m_Form.Bounds = r;
+			}
 			if ((ok==false)||(ScreenIn(r) == false))
 			{
 				Rectangle rct = Screen.PrimaryScreen.Bounds;
@@ -71,36 +78,16 @@ namespace BRY
 			}
 
 		}
-		public void StoreLoc()
-		{
-			if (m_Form == null) return;
-			SetPoint("Location", m_Form.Location);
-		}
-		public void RestoreLoc()
-		{
-			if (m_Form == null) return;
-			bool ok = false;
-			Point p = GetPoint("Location", out ok);
-			if (ok) m_Form.Location = p;
-			Rectangle r = m_Form.Bounds;
-			if ((ok == false) || (ScreenIn(r) == false))
-			{
-				Rectangle rct = Screen.PrimaryScreen.Bounds;
-				Point p2 = new Point((rct.Width - m_Form.Width) / 2, (rct.Height - m_Form.Height) / 2);
-				m_Form.Location = p2;
-			}
-
-		}
 		// ****************************************************
-		static public bool IsInRect(Rectangle a, Rectangle b)
+		static public bool IsInRect(Rectangle area, Rectangle target)
 		{
 			bool ret = true;
 
-			if ((a.Left > b.Left + b.Width) || (a.Left + a.Width < b.Left))
+			if ((area.Left > target.Left + target.Width) || (area.Left + area.Width < target.Left))
 			{
 				ret = false;
 			}
-			if ((a.Top > b.Top + b.Height) || (a.Top + a.Height < b.Top))
+			if ((area.Top > target.Top + target.Height) || (area.Top + area.Height < target.Top))
 			{
 				ret = false;
 			}
@@ -112,7 +99,7 @@ namespace BRY
 			bool ret = false;
 			foreach (Screen s in Screen.AllScreens)
 			{
-				Rectangle r = s.Bounds;
+				Rectangle r = s.WorkingArea;
 				if (IsInRect(r, rct))
 				{
 					ret = true;
@@ -121,6 +108,22 @@ namespace BRY
 			}
 			return ret;
 		}
+		// ****************************************************
+		static public Rectangle NowScreen(Rectangle rct)
+		{
+			Rectangle ret = new Rectangle(0,0,0,0);
+			foreach (Screen s in Screen.AllScreens)
+			{
+				Rectangle r = s.WorkingArea;
+				if (IsInRect(r, rct))
+				{
+					ret = r;
+					break;
+				}
+			}
+			return ret;
+		}
+		// ****************************************************
 		static public bool ScreenIn(Point p,Size sz)
 		{
 			return ScreenIn(new Rectangle(p, sz));
