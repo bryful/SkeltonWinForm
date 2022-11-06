@@ -7,7 +7,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 namespace BRY
 {
-	public class AEJson
+	public class F_AEJson
 	{
 		static private bool StringBlock(string s,int idx,out int result)
 		{
