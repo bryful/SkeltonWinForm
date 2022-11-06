@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 
 namespace BRY
 {
-	public class PrefFile : AEJson
+	public class PrefFile
 	{
+		private JsonObject m_data = new JsonObject();
 		// *********************************
 		private string _m_AppName = "";
 		public string AppName { get { return _m_AppName; } }
-		private Form? m_Form = null;
-		private string m_dir = "";
-		public string Dir { get { return m_dir; } }
-
 		// *********************************
-		private JsonObject m_data = new JsonObject();
+		private string _filePath = "";
+		public string FilePath { get { return _filePath; } }
+		public void SetFilePath(string p) { _filePath = p; }
+		// *********************************
+		private Form? m_Form = null;
+		private string m_FileDirectory = "";
+		public string FileDirectory { get { return m_FileDirectory; } }
+
 		// *********************************
 		public PrefFile(Form? fm =null,string aName = "")
 		{
@@ -31,8 +35,8 @@ namespace BRY
 			{
 				_m_AppName = aName;
 			}
-			m_dir = GetFileSystemPath(Environment.SpecialFolder.ApplicationData);
-			SetFilePath(Path.Combine(m_dir,_m_AppName + ".json"));
+			m_FileDirectory = GetFileSystemPath(Environment.SpecialFolder.ApplicationData);
+			SetFilePath(Path.Combine(m_FileDirectory,_m_AppName + ".json"));
 		}
 		// ****************************************************
 		private static string GetFileSystemPath(Environment.SpecialFolder folder)
@@ -57,13 +61,38 @@ namespace BRY
 		// ****************************************************
 		public void StoreForm()
 		{
+			if (m_Form == null) return;
+			SetRect("FormBounds", m_Form.Bounds);
+		}
+		// ****************************************************
+		public void RestoreForm()
+		{
+			if (m_Form == null) return;
+			bool ok = false;
+			Rectangle r = GetRect("FormBounds", out ok);
+			if (ok)
+			{
+				m_Form.MaximumSize = new Size(65536, 65536);
+				m_Form.Bounds = r;
+			}
+			if ((ok == false) || (ScreenIn(r) == false))
+			{
+				Rectangle rct = Screen.PrimaryScreen.Bounds;
+				Point p = new Point((rct.Width - m_Form.Width) / 2, (rct.Height - m_Form.Height) / 2);
+				m_Form.Location = p;
+			}
+
+		}
+		// ****************************************************
+		public void SetPoint(string key, Point p)
+		{
 			JsonObject pnt = new JsonObject();
 			pnt.Add("X", p.X);
 			pnt.Add("Y", p.Y);
 			m_data.Add(key, pnt);
 		}
 		// ****************************************************
-		public void RestoreForm()
+		public Point GetPoint(string key, out bool ok)
 		{
 			Point ret = new Point(0,0);
 			ok = false;
@@ -161,7 +190,7 @@ namespace BRY
 
 		}
 		// ****************************************************
-		static public bool IsInRect(Rectangle area, Rectangle target)
+		public void SetValue(string key, int v)
 		{
 			m_data.Add(key, v);
 		}
@@ -207,7 +236,7 @@ namespace BRY
 			{
 				if (m_data.ContainsKey(key))
 				{
-					var ja = m_data[key].AsArray();
+					JsonArray ja = m_data[key].AsArray();
 					if (ja.Count > 0)
 					{
 						ret = new string[ja.Count];
@@ -249,7 +278,7 @@ namespace BRY
 			{
 				if (m_data.ContainsKey(key))
 				{
-					var ja = m_data[key].AsArray();
+					JsonArray ja = m_data[key].AsArray();
 					if (ja.Count > 0)
 					{
 						ret = new int[ja.Count];
@@ -318,7 +347,7 @@ namespace BRY
 			{
 				if (m_data.ContainsKey(key))
 				{
-					var ja = m_data[key].AsArray();
+					JsonArray ja = m_data[key].AsArray();
 					if (ja.Count > 0)
 					{
 						ret = new bool[ja.Count];
@@ -381,6 +410,11 @@ namespace BRY
 			return ret;
 		}
 		// ****************************************************
+		public bool Save()
+		{
+			return Save(_filePath);
+		}
+		// ****************************************************
 		public bool Save(string p)
 		{
 			bool ret = false;
@@ -396,6 +430,51 @@ namespace BRY
 			}
 			return ret;
 		}
+		// ****************************************************
+		public bool Load()
+		{
+			return Load(_filePath);
+		}
+		// ****************************************************
+		public bool Load(string p)
+		{
+			bool ret = false;
+
+			try
+			{
+				if (File.Exists(p) == true)
+				{
+					string str = File.ReadAllText(p);
+					if (str != "")
+					{
+						FromJson(str);
+						ret = true;
+						_filePath = p;
+					}
+				}
+			}
+			catch
+			{
+				m_data = new JsonObject();
+				ret = false;
+			}
+			return ret;
+		}
+		// ****************************************************
+		static public bool IsInRect(Rectangle a, Rectangle b)
+		{
+			bool ret = true;
+
+			if ((a.Left > b.Left + b.Width) || (a.Left + a.Width < b.Left))
+			{
+				ret = false;
+			}
+			if ((a.Top > b.Top + b.Height) || (a.Top + a.Height < b.Top))
+			{
+				ret = false;
+			}
+			return ret;
+		}       
 		// ****************************************************
 		static public bool ScreenIn(Rectangle rct)
 		{

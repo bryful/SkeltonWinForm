@@ -152,15 +152,8 @@ namespace SkeltonWinForm
 							break;
 						case "foregroundWindow":
 						case "foreground":
-<<<<<<< HEAD
 							ForegroundWindow();
-						break;
-=======
-							this.Invoke((Action)(() => {
-								ForegroundWindow();
-							}));
 							break;
->>>>>>> 5229e770a79980331cd21b43dfbc54ee944ba159
 						case "load":
 						case "ld":
 							int idx = item.Index + 1;
@@ -206,13 +199,7 @@ namespace SkeltonWinForm
 				{
 					if (_args.Count == 1)
 					{
-<<<<<<< HEAD
 						Import(_args[0].Name);
-=======
-						this.Invoke((Action)(() => {
-							err = Import(args1.Params[0].Arg);
-						}));
->>>>>>> 5229e770a79980331cd21b43dfbc54ee944ba159
 					}
 					else
 					{
@@ -224,17 +211,6 @@ namespace SkeltonWinForm
 				}
 			}
 			if(QuitFlag) Application.Exit();
-<<<<<<< HEAD
-
-=======
-			if (IsPipe == PIPECALL.PipeExec)
-			{
-				//this.Text += "Pi";
-			}
-			this.Invoke((Action)(() => {
-				SetForegroundWindow(this.Handle);
-			}));
->>>>>>> 5229e770a79980331cd21b43dfbc54ee944ba159
 		}
 		// *******************************************************************************
 
@@ -263,12 +239,12 @@ namespace SkeltonWinForm
 			textBox1.Text = string.Format("{0};{1}",a2[0], b2[0]);
 			*/
 
-			textBox2.Text = AEJson.FromAEJson(textBox1.Text);
+			//textBox2.Text = AEJson.FromAEJson(textBox1.Text);
 		}
 
 		private void button2_Click(object sender, EventArgs e)
 		{
-			textBox3.Text = AEJson.ToAEJson(textBox2.Text);
+			//textBox3.Text = AEJson.ToAEJson(textBox2.Text);
 
 		}
 	}
