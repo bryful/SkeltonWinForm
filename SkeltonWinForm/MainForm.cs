@@ -216,42 +216,5 @@ namespace SkeltonWinForm
 
 
 
-		private void button1_Click(object sender, EventArgs e)
-		{
-			/*
-			PIPECALL a = PIPECALL.PipeExec;
-
-			PipeData pd = new PipeData(b, a);
-			string js = pd.ToJson();
-			PipeData pd2 = new PipeData(js);
-			string[] b2 = pd2.GetArgs();
-			string[] a = new string[] { "aaa", "sssss", "sfsda" };
-			int[] b = new int[] { 12, -2, 6 };
-
-			PrefFile p = new PrefFile();
-			p.SetValue("a", a);
-			p.SetValue("b", b);
-
-			bool ok = true;
-			string[] a2 = p.GetValueStringArray("a", out ok);
-			int[] b2 = p.GetValueIntArray("b", out ok);
-
-			textBox1.Text = string.Format("{0};{1}",a2[0], b2[0]);
-			*/
-
-			//textBox2.Text = AEJson.FromAEJson(textBox1.Text);
-		}
-
-		private void button2_Click(object sender, EventArgs e)
-		{
-			//textBox3.Text = AEJson.ToAEJson(textBox2.Text);
-
-		}
 	}
-	// ******************************************************************************
-
-	// *******************************************************************************
-
-
-	// ********************************************************************
 }

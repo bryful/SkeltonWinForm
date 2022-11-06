@@ -155,8 +155,6 @@
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(586, 283);
 			this.textBox1.TabIndex = 5;
-			this.textBox1.Text = "({loFolder:\"01)material\\\\03)cell\\\\00)footage\", cellFolder:\"01)material\\\\01)frame\"" +
-    ", selectedFolder:\"/k/2Dteam/mrt/vol_GOP/04_paint/mrt_gop_024_k\"})";
 			// 
 			// button1
 			// 
@@ -167,7 +165,6 @@
 			this.button1.TabIndex = 6;
 			this.button1.Text = "button1";
 			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// textBox2
 			// 
@@ -197,7 +194,6 @@
 			this.button2.TabIndex = 9;
 			this.button2.Text = "button2";
 			this.button2.UseVisualStyleBackColor = true;
-			this.button2.Click += new System.EventHandler(this.button2_Click);
 			// 
 			// MainForm
 			// 
