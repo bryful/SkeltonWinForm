@@ -57,7 +57,7 @@
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 3, 0, 3);
-			this.menuStrip1.Size = new System.Drawing.Size(629, 25);
+			this.menuStrip1.Size = new System.Drawing.Size(607, 25);
 			this.menuStrip1.TabIndex = 3;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -140,9 +140,9 @@
 			// 
 			// statusStrip1
 			// 
-			this.statusStrip1.Location = new System.Drawing.Point(0, 491);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 375);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(629, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(607, 22);
 			this.statusStrip1.TabIndex = 4;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -153,7 +153,7 @@
 			this.textBox1.Location = new System.Drawing.Point(12, 28);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(608, 84);
+			this.textBox1.Size = new System.Drawing.Size(586, 283);
 			this.textBox1.TabIndex = 5;
 			this.textBox1.Text = "({loFolder:\"01)material\\\\03)cell\\\\00)footage\", cellFolder:\"01)material\\\\01)frame\"" +
     ", selectedFolder:\"/k/2Dteam/mrt/vol_GOP/04_paint/mrt_gop_024_k\"})";
@@ -161,7 +161,7 @@
 			// button1
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.button1.Location = new System.Drawing.Point(410, 372);
+			this.button1.Location = new System.Drawing.Point(491, 317);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(90, 41);
 			this.button1.TabIndex = 6;
@@ -203,10 +203,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(629, 513);
-			this.Controls.Add(this.button2);
-			this.Controls.Add(this.textBox3);
-			this.Controls.Add(this.textBox2);
+			this.ClientSize = new System.Drawing.Size(607, 397);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.statusStrip1);

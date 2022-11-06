@@ -15,11 +15,27 @@ namespace SkeltonWinForm
 	public partial class MainForm : Form
 	{
 		private string m_FileName = "";
-		public static bool _execution = true;
 		// ********************************************************************
-		[DllImport("user32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool SetForegroundWindow(IntPtr hWnd);
+		private F_Pipe m_Server = new F_Pipe();
+		public void StartServer(string pipename)
+		{
+			m_Server.Server(pipename);
+			m_Server.Reception += M_Server_Reception;
+		}
+		// ********************************************************************
+		public void StopServer()
+		{
+			m_Server.StopServer();
+		}
+		// ********************************************************************
+		private void M_Server_Reception(object sender, ReceptionArg e)
+		{
+			this.Invoke((Action)(() => {
+				PipeData pd = new PipeData(e.Text);
+				Command(pd.Args, PIPECALL.PipeExec);
+				ForegroundWindow();
+			}));
+		}
 		// ********************************************************************
 		public MainForm()
 		{
@@ -70,7 +86,7 @@ namespace SkeltonWinForm
 			try
 			{
 				string s = textBox1.Text;
-				File.WriteAllText(p, s, Encoding.GetEncoding("utf-8"));
+				File.WriteAllText(p, s);
 				m_FileName = p;
 				this.Text = Path.GetFileName(p);
 				ret = true;
@@ -112,21 +128,21 @@ namespace SkeltonWinForm
 		// ********************************************************************
 		public void ForegroundWindow()
 		{
-			SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+			F_W.SetForegroundWindow(this.Handle);
 		}
 		// ********************************************************************
 		public void Command(string[] args, PIPECALL IsPipe = PIPECALL.StartupExec)
 		{
-			bool QuitFlag = false;			bool err = true;
+			bool QuitFlag = false;			
 
-			Args args1 = new Args(args);
-			if (args1.OptionCount > 0)
+			F_Args _args = new F_Args(args);
+			if(_args.OptionCount>0)
 			{
-				for (int i = 0; i < args1.OptionCount; i++)
+				for (int i = 0; i < _args.OptionCount; i++)
 				{
-					if (err == false) break;
-					Param p = args1.Option(i);
-					switch (p.OptionStr.ToLower())
+					F_ArgItem? item = _args.Option(i);
+					if (item == null) continue;
+					switch(item.Option.ToLower())
 					{
 						case "tocenter":
 						case "center":
@@ -136,67 +152,81 @@ namespace SkeltonWinForm
 							break;
 						case "foregroundWindow":
 						case "foreground":
+<<<<<<< HEAD
+							ForegroundWindow();
+						break;
+=======
 							this.Invoke((Action)(() => {
 								ForegroundWindow();
 							}));
 							break;
+>>>>>>> 5229e770a79980331cd21b43dfbc54ee944ba159
 						case "load":
 						case "ld":
-							int idx = p.Index + 1;
-							if (idx < args1.ParamsCount)
+							int idx = item.Index + 1;
+						if (idx < _args.Count)
+						{
+							if (_args[idx].IsOption == false)
 							{
-								if (args1.Params[idx].IsOption == false)
-								{
-									err = Import(args1.Params[idx].Arg);
-								}
+								Import(_args[idx].Name);
 							}
-							break;
+						}
+						break;
 						case "save":
 						case "sv":
-							int idx2 = p.Index + 1;
-							if (idx2 < args1.ParamsCount)
+							int idx2 = item.Index + 1;
+							if (idx2 < _args.Count)
 							{
-								if (args1.Params[idx2].IsOption == false)
+								if (_args[idx2].IsOption == false)
 								{
-									err = Export(args1.Params[idx2].Arg);
+									Export(_args[idx2].Name);
 								}
 							}
 							break;
 						case "exit":
 						case "quit":
-							if ((args1.ParamsCount == 1) && ((IsPipe == PIPECALL.DoubleExec)|| (IsPipe == PIPECALL.PipeExec)))
+							if ((_args.Count == 1) && ((IsPipe == PIPECALL.DoubleExec) || (IsPipe == PIPECALL.PipeExec)))
 							{
 								QuitFlag = true;
 							}
 							break;
+						case "callback":
+							string s = textBox1.Text;
+							F_Pipe.Client(Program.MyCallBackId, s).Wait();
+							break;
+
 					}
+
 				}
+
 			}
 			else
 			{
-				if (args1.ParamsCount > 0)
+				if (_args.Count > 0)
 				{
-					if (args1.ParamsCount == 1)
+					if (_args.Count == 1)
 					{
+<<<<<<< HEAD
+						Import(_args[0].Name);
+=======
 						this.Invoke((Action)(() => {
 							err = Import(args1.Params[0].Arg);
 						}));
+>>>>>>> 5229e770a79980331cd21b43dfbc54ee944ba159
 					}
 					else
 					{
-						this.Invoke((Action)(() => {
-							textBox1.Lines = args1.ParamStrings;
-							textBox1.Select(0, 0);
-						}));
+						textBox1.Text = _args.ArgsString();
+						textBox1.Select(0, 0);
+						//this.Invoke((Action)(() => {
+						//}));
 					}
 				}
 			}
-			if( IsPipe == PIPECALL.PipeExec)
-			{
-				PipeData pd = new PipeData(args, IsPipe);
-				CallExe.PipeClient("SkeltonWinFormCall",pd.ToJson()).Wait();
-			}
 			if(QuitFlag) Application.Exit();
+<<<<<<< HEAD
+
+=======
 			if (IsPipe == PIPECALL.PipeExec)
 			{
 				//this.Text += "Pi";
@@ -204,70 +234,11 @@ namespace SkeltonWinForm
 			this.Invoke((Action)(() => {
 				SetForegroundWindow(this.Handle);
 			}));
+>>>>>>> 5229e770a79980331cd21b43dfbc54ee944ba159
 		}
 		// *******************************************************************************
-		// *******************************************************************************
-		static public void ArgumentPipeServer(string pipeName)
-		{
-			Task.Run(() =>
-			{ //Taskを使ってクライアント待ち
-				while (_execution)
-				{
-					//複数作ることもできるが、今回はwhileで1つずつ処理する
-					using (NamedPipeServerStream pipeServer = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 1))
-					{
-						// クライアントの接続待ち
-						pipeServer.WaitForConnection();
 
-						StreamString ssSv = new StreamString(pipeServer);
 
-						while (true)
-						{ //データがなくなるまで                       
-							string read = ssSv.ReadString(); //クライアントの引数を受信 
-							if (string.IsNullOrEmpty(read))
-								break;
-
-							//引数が受信できたら、Applicationに登録されているだろうForm1に引数を送る
-							FormCollection apcl = Application.OpenForms;
-
-							if (apcl.Count > 0)
-							{
-								PipeData pd = new PipeData(read);
-								((MainForm)apcl[0]).Command(pd.GetArgs(), pd.GetPIPECALL()); //取得した引数を送る
-							}
-
-							if (!_execution)
-								break; //起動停止？
-						}
-#pragma warning disable CS8600 // Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
-						ssSv = null;
-#pragma warning restore CS8600 // Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
-					}
-				}
-			});
-		}
-		// ******************************************************************************
-		/*
-		public static Task ArgumentPipeClient(string pipeName, string js)
-		{
-			return Task.Run(() =>
-			{ //Taskを使ってサーバに送信waitで処理が終わるまで待つ
-				using (NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation))
-				{
-					StreamString ssCl;
-					string writeData;
-					pipeClient.Connect();
-
-					ssCl = new StreamString(pipeClient);
-					writeData = js; //送信する引数
-					ssCl.WriteString(writeData);
-#pragma warning disable CS8600 // Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
-					ssCl = null;
-#pragma warning restore CS8600 // Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
-				}
-			});
-		}
-		*/
 
 		private void button1_Click(object sender, EventArgs e)
 		{

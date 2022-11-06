@@ -1,7 +1,12 @@
 {
   "profiles": {
     "SkeltonWinForm": {
+<<<<<<< HEAD
+      "commandName": "Project",
+      "commandLineArgs": "aaa bbb vvv\r\n"
+=======
       "commandName": "Project"
+>>>>>>> 5229e770a79980331cd21b43dfbc54ee944ba159
     }
   }
 }
