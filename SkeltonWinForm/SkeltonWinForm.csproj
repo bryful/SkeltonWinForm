@@ -11,6 +11,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ctrl\T_BaseControl.cs" />
+    <Compile Remove="ctrl\T_BaseControl.Designer.cs" />
+    <Compile Remove="ctrl\T_G.cs" />
+    <Compile Remove="ctrl\T_MyFonts.cs" />
+    <Compile Remove="ctrl\T_MyFonts.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="ctrl\T_BaseControl.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ctrl\T_BaseControl.cs" />
+    <None Include="ctrl\T_BaseControl.Designer.cs" />
+    <None Include="ctrl\T_BaseControl.resx" />
+    <None Include="ctrl\T_G.cs" />
+    <None Include="ctrl\T_MyFonts.cs" />
+    <None Include="ctrl\T_MyFonts.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

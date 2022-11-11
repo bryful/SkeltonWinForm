@@ -59,5 +59,35 @@ namespace SkeltonWinForm.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] Myrica {
+            get {
+                object obj = ResourceManager.GetObject("Myrica", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] MyricaM {
+            get {
+                object obj = ResourceManager.GetObject("MyricaM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] SourceHanCodeJP {
+            get {
+                object obj = ResourceManager.GetObject("SourceHanCodeJP", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
